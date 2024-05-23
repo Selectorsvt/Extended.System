@@ -45,4 +45,4 @@ jobs:
     - name: Pack
       run: dotnet pack -c Release -o nupkg -p:Version=${{steps.vars.outputs.version}}
     - name: Push to nuget.org
-      run: dotnet nuget push .\nupkg\Extended.System.${{steps.vars.outputs.version}}.nupkg --api-key ${{secrets.NUGETAPIKEY}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ./nupkg/Extended.System.${{steps.vars.outputs.version}}.nupkg --api-key ${{secrets.NUGETAPIKEY}} --source https://api.nuget.org/v3/index.json
