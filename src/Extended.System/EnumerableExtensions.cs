@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -70,7 +71,7 @@ namespace Extended.System
         /// <param name="array">The array.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <returns>The columns.</returns>
-        public static List<T[]> SplitArray<T>(this IEnumerable<T> array, int numberOfColumns)
+        public static ReadOnlyCollection<T[]> SplitArray<T>(this IEnumerable<T> array, int numberOfColumns)
         {
             int totalItems = array.Count();
             int itemsPerColumn = (int)Math.Ceiling(totalItems / (double)numberOfColumns);
@@ -88,7 +89,7 @@ namespace Extended.System
                 columns.Add(array.Skip(i * itemsPerColumn).Take(take).ToArray());
             }
 
-            return columns;
+            return new ReadOnlyCollection<T[]>(columns);
         }
 
         /// <summary>
