@@ -4,6 +4,11 @@
 name: .NET
 
 on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release version'
+        required: true
   push:
     branches: [ "main" ]
   pull_request:
