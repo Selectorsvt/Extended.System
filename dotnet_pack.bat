@@ -1,1 +1,1 @@
-dotnet pack -c Release -o nupkg
+dotnet pack -c Release -o nupkg -p:Version=1.0.1

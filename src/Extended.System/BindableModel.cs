@@ -58,7 +58,7 @@ namespace Extended.System
             {
                 var prevValue = session[memberName!];
 
-                if (!prevValue?.Equals(value) ?? value != null)
+                if (!(prevValue?.Equals(value) ?? value == null))
                 {
                     session[memberName!] = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
@@ -86,7 +86,7 @@ namespace Extended.System
             {
                 var prevValue = session[memberName!]!;
 
-                if (!prevValue?.Equals(value) ?? value != null)
+                if (!(prevValue?.Equals(value) ?? value == null))
                 {
                     prevValue!.Clear();
                     if (value != null)
