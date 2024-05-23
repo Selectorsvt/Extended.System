@@ -6,11 +6,11 @@ name: .NET
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - v*.*.*
     branches: [ "main" ]
   pull_request:
     tags:
-      - 'v*.*.*'
+      - v*.*.*
     branches: [ "main" ]
 
 jobs:
