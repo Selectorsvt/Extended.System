@@ -52,20 +52,20 @@ namespace Extended.System
         protected void SetProperty<T>(T value, [CallerMemberName] string? memberName = null)
         {
             CheckIsNull(memberName);
-
+            OnPropertyChanging(memberName);
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(memberName));
             if (session.TryGetValue(memberName!, out dynamic? prevValue))
             {
                 if (!(prevValue?.Equals(value) ?? value == null))
                 {
                     session[memberName!] = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+                    OnPropertyChanged(this, memberName);
                 }
             }
             else
             {
                 session.Add(memberName!, value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+                OnPropertyChanged(this, memberName);
             }
         }
 
@@ -78,8 +78,7 @@ namespace Extended.System
         protected void SetProperty<T>(IList<T> value, [CallerMemberName] string? memberName = null)
         {
             CheckIsNull(memberName);
-
-            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(memberName));
+            OnPropertyChanging(memberName);
             if (session.TryGetValue(memberName!, out dynamic? prevValue))
             {
                 if (!(prevValue?.Equals(value) ?? value == null))
@@ -93,13 +92,13 @@ namespace Extended.System
                         }
                     }
 
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+                    OnPropertyChanged(this, memberName);
                 }
             }
             else
             {
                 session.Add(memberName!, new BindingList<T>(value));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+                OnPropertyChanged(this, memberName);
             }
         }
 
@@ -113,8 +112,36 @@ namespace Extended.System
             PropertyChanged += (s, e) =>
             {
                 if (properties.Contains(e.PropertyName))
-                    PropertyChanged?.Invoke(s, new PropertyChangedEventArgs(dependentProperty));
+                    OnPropertyChanged(s, dependentProperty);
             };
+        }
+
+        /// <summary>
+        /// Raises the property changed using the specified property name.
+        /// </summary>
+        /// <param name="propertyName">The property name.</param>
+        protected void OnPropertyChanged(string? propertyName)
+        {
+            OnPropertyChanged(this, propertyName);
+        }
+
+        /// <summary>
+        /// Ons the property changing using the specified property name.
+        /// </summary>
+        /// <param name="propertyName">The property name.</param>
+        protected void OnPropertyChanging(string? propertyName)
+        {
+            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Fires the property changed using the specified sender.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="propertyName">The property name.</param>
+        protected void OnPropertyChanged(object? sender, string? propertyName)
+        {
+            PropertyChanged?.Invoke(sender, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
