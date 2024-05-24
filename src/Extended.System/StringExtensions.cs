@@ -85,5 +85,47 @@ namespace Extended.System
         {
             return Path.GetFileNameWithoutExtension(path);
         }
+
+        /// <summary>
+        /// Gets the file info using the specified path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The file info.</returns>
+        public static FileInfo? GetFileInfo(this string? path)
+        {
+            return path != null && File.Exists(path) ? new FileInfo(path) : null;
+        }
+
+        /// <summary>
+        /// Returns the md 5 using the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <returns>The string.</returns>
+        public static string ToMD5(this string input, Encoding? encoding = null)
+        {
+            if (encoding == null)
+                encoding = Encoding.UTF8;
+
+#if NET6_0_OR_GREATER
+            byte[] inputBytes = encoding.GetBytes(input);
+            byte[] hashBytes = MD5.HashData(inputBytes);
+
+            return Convert.ToHexString(hashBytes);
+#else
+            using (var md5 = MD5.Create())
+            {
+                byte[] inputBytes = encoding.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+
+                return sb.ToString();
+            }
+#endif
+        }
     }
 }

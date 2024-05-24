@@ -39,8 +39,8 @@ namespace Extended.System
         /// <returns>The dynamic.</returns>
         protected dynamic? GetProperty([CallerMemberName] string? memberName = null)
         {
-            CheckIsNull(memberName);
-            return session.ContainsKey(memberName!) ? session[memberName!] : default;
+            BindableModel.CheckIsNull(memberName);
+            return session.TryGetValue(memberName!, out dynamic? value) ? value : default;
         }
 
         /// <summary>
@@ -51,13 +51,11 @@ namespace Extended.System
         /// <param name="memberName">The member name.</param>
         protected void SetProperty<T>(T value, [CallerMemberName] string? memberName = null)
         {
-            CheckIsNull(memberName);
+            BindableModel.CheckIsNull(memberName);
 
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(memberName));
-            if (session.ContainsKey(memberName!))
+            if (session.TryGetValue(memberName!, out dynamic? prevValue))
             {
-                var prevValue = session[memberName!];
-
                 if (!(prevValue?.Equals(value) ?? value == null))
                 {
                     session[memberName!] = value;
@@ -79,13 +77,11 @@ namespace Extended.System
         /// <param name="memberName">The member name.</param>
         protected void SetProperty<T>(IList<T> value, [CallerMemberName] string? memberName = null)
         {
-            CheckIsNull(memberName);
+            BindableModel.CheckIsNull(memberName);
 
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(memberName));
-            if (session.ContainsKey(memberName!))
+            if (session.TryGetValue(memberName!, out dynamic? prevValue))
             {
-                var prevValue = session[memberName!]!;
-
                 if (!(prevValue?.Equals(value) ?? value == null))
                 {
                     prevValue!.Clear();
@@ -126,10 +122,15 @@ namespace Extended.System
         /// </summary>
         /// <param name="memberName">The member name.</param>
         /// <exception cref="ArgumentNullException">Posible exception.</exception>
-        private void CheckIsNull(string? memberName)
+        private static void CheckIsNull(string? memberName)
         {
             if (memberName == null)
-                throw new ArgumentNullException(nameof(memberName));
+#if NET6_0_OR_GREATER
+                ArgumentNullException.ThrowIfNull(nameof(memberName));
+#else
+           throw new ArgumentNullException(nameof(memberName));
+#endif
+
         }
     }
 }
