@@ -6,6 +6,21 @@ namespace Extended.System
     public static class TypeExtensions
     {
         /// <summary>
+        /// Gets the default value using the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>The object.</returns>
+        public static dynamic? GetDefaultValue(this Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+
+            return default;
+        }
+
+        /// <summary>
         /// Describes whether is inherited.
         /// </summary>
         /// <typeparam name="T">The .</typeparam>

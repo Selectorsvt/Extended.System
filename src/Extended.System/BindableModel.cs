@@ -39,8 +39,8 @@ namespace Extended.System
         /// <returns>The dynamic.</returns>
         protected dynamic? GetProperty([CallerMemberName] string? memberName = null)
         {
-            BindableModel.CheckIsNull(memberName);
-            return session.TryGetValue(memberName!, out dynamic? value) ? value : default;
+            CheckIsNull(memberName);
+            return session.TryGetValue(memberName!, out dynamic? value) ? value : this.GetPropertyType(memberName)?.GetDefaultValue();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Extended.System
         /// <param name="memberName">The member name.</param>
         protected void SetProperty<T>(T value, [CallerMemberName] string? memberName = null)
         {
-            BindableModel.CheckIsNull(memberName);
+            CheckIsNull(memberName);
 
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(memberName));
             if (session.TryGetValue(memberName!, out dynamic? prevValue))
@@ -77,7 +77,7 @@ namespace Extended.System
         /// <param name="memberName">The member name.</param>
         protected void SetProperty<T>(IList<T> value, [CallerMemberName] string? memberName = null)
         {
-            BindableModel.CheckIsNull(memberName);
+            CheckIsNull(memberName);
 
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(memberName));
             if (session.TryGetValue(memberName!, out dynamic? prevValue))
