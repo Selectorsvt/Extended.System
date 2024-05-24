@@ -98,7 +98,7 @@ namespace Extended.System
         /// <typeparam name="T">The .</typeparam>
         /// <param name="array">The array.</param>
         /// <returns>The bool.</returns>
-        public static bool HasItem<T>(this IEnumerable<T>? array)
+        public static bool HasItems<T>(this IEnumerable<T>? array)
         {
             return array != null && array.Any();
         }
