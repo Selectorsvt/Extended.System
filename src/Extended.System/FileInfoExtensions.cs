@@ -17,7 +17,7 @@ namespace Extended.System
 
             using (var fileStream = fileInfo.OpenRead())
             {
-                return fileInfo.CalculateMD5();
+                return fileStream.CalculateMD5();
             }
         }
     }
