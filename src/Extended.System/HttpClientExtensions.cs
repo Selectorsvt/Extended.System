@@ -29,7 +29,13 @@ namespace Extended.System
             string fileName,
             CancellationToken cancellationToken = default)
         {
-            await client.DownloadFileTaskAsync(new Uri(uri), fileName, cancellationToken).ConfigureAwait(false);
+            using (var s = await client.GetStreamAsync(uri, cancellationToken).ConfigureAwait(false))
+            {
+                using (var fs = new FileStream(fileName, FileMode.CreateNew))
+                {
+                    await s.CopyToAsync(fs, cancellationToken).ConfigureAwait(false);
+                }
+            }
         }
 
         /// <summary>
