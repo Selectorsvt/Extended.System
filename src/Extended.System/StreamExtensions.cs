@@ -20,5 +20,18 @@ namespace Extended.System
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
+#if !NETSTANDARD2_1 && !NET6_0_OR_GREATER
+        /// <summary>
+        /// Copies the to using the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+        public static async Task CopyToAsync(this Stream source, Stream destination, CancellationToken cancellationToken)
+        {
+           await source.CopyToAsync(destination).ConfigureAwait(false);
+        }
+#endif
     }
 }

@@ -51,23 +51,7 @@ namespace Extended.System
         /// <param name="e">The .</param>
         private void Callback(object? sender, global::System.Timers.ElapsedEventArgs e)
         {
-            var hasLock = false;
-
-            try
-            {
-                Monitor.TryEnter(_locker, ref hasLock);
-                if (!hasLock)
-                    return;
-
-                _action.Invoke();
-            }
-            finally
-            {
-                if (hasLock)
-                {
-                    Monitor.Exit(_locker);
-                }
-            }
+            _action.InvokeWhithLock(_locker);
         }
 
         /// <summary>
