@@ -1,5 +1,9 @@
 using System.Collections.Specialized;
+#if !NET462
 using System.Web;
+#else
+using System.Net.Http;
+#endif
 
 namespace Extended.System
 {
@@ -15,7 +19,12 @@ namespace Extended.System
         /// <param name="queryCollection">The query collection.</param>
         public static void AddQuery(this UriBuilder url, NameValueCollection queryCollection)
         {
-            NameValueCollection currentValues = HttpUtility.ParseQueryString(url.Query);
+            NameValueCollection currentValues;
+#if NET462
+            currentValues = url.Uri.ParseQueryString();
+#else
+            currentValues = HttpUtility.ParseQueryString(url.Query);
+#endif
             if (!currentValues.HasKeys())
             {
                 if (queryCollection.HasKeys())
