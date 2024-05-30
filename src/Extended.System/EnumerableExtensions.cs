@@ -113,5 +113,16 @@ namespace Extended.System
         {
             return string.Join(separator, values);
         }
+
+        /// <summary>
+        /// Fors the each using the specified values.
+        /// </summary>
+        /// <typeparam name="T">The .</typeparam>
+        /// <param name="values">The values.</param>
+        /// <param name="action">The action.</param>
+        public static void ForEach<T>(this IEnumerable<T> values, Action<T> action)
+        {
+            values.ToList().ForEach(action);
+        }
     }
 }

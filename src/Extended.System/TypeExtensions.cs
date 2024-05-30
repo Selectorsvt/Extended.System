@@ -42,5 +42,15 @@ namespace Extended.System
         {
             return (inheritedType.IsInterface && type.GetInterfaces().Contains(inheritedType)) || (inheritedType.IsClass && inheritedType.IsAssignableFrom(type));
         }
+
+        /// <summary>
+        /// Describes whether is flagged enum.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>The result.</returns>
+        public static bool IsFlaggedEnum(this Type type)
+        {
+            return type.IsEnum && Attribute.IsDefined(type, typeof(FlagsAttribute));
+        }
     }
 }

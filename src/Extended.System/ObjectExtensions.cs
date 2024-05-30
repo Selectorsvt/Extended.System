@@ -38,5 +38,27 @@ namespace Extended.System
         {
             return JsonConvert.SerializeObject(obj);
         }
+
+        /// <summary>
+        /// Returns the dynamic using the specified obj.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        /// <returns>The result.</returns>
+        public static IDictionary<string, object?> ToDynamic(this object obj)
+        {
+            if (obj is IDictionary<string, object?> dictionary)
+            {
+                return dictionary;
+            }
+
+            var properties = TypeDescriptor.GetProperties(obj);
+            var result = new Dictionary<string, object?>();
+            foreach (PropertyDescriptor property in properties)
+            {
+                result.Add(property.Name, property.GetValue(obj));
+            }
+
+            return result;
+        }
     }
 }
