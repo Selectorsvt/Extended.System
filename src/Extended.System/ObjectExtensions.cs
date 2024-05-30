@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
 namespace Extended.System
 {
@@ -26,6 +27,16 @@ namespace Extended.System
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets the json using the specified obj.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        /// <returns>The string.</returns>
+        public static string SerializeJson(this object obj)
+        {
+            return JsonConvert.SerializeObject(obj);
         }
     }
 }

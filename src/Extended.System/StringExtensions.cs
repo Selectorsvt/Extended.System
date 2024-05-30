@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace Extended.System
 {
@@ -9,7 +10,21 @@ namespace Extended.System
     /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// The regex.
+        /// </summary>
         private static Regex htmlTagsRegex = new Regex(@"<[^>]*>");
+
+        /// <summary>
+        /// Gets the json object using the specified json.
+        /// </summary>
+        /// <typeparam name="T">Type of object.</typeparam>
+        /// <param name="json">The json.</param>
+        /// <returns>Object.</returns>
+        public static T? DeserializeJsonObject<T>(this string json)
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
 
         /// <summary>
         /// Returns the enum using the specified value.

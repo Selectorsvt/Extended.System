@@ -6,9 +6,10 @@
     <PackageVersion Include="Meziantou.Analyzer" Version="2.0.152" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0" />
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="StyleCop.Analyzers.Unstable" Version="1.2.0.556" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
-	<PackageVersion Include="System.Net.Http" Version="4.3.4" />
+    <PackageVersion Include="System.Net.Http" Version="4.3.4" />
     <!-- XUNIT -->
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
