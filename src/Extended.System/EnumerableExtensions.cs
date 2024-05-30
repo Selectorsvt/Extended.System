@@ -109,20 +109,84 @@ namespace Extended.System
         /// <param name="values">The values.</param>
         /// <param name="separator">The separator.</param>
         /// <returns>The string.</returns>
-        public static string ToSeparatedString(this IEnumerable<string> values, string separator)
+        public static string ToSeparatedString(this IEnumerable<string?> values, string separator)
         {
             return string.Join(separator, values);
         }
 
         /// <summary>
-        /// Fors the each using the specified values.
+        /// Fors the each using the specified objects.
         /// </summary>
         /// <typeparam name="T">The .</typeparam>
-        /// <param name="values">The values.</param>
+        /// <param name="objects">The objects.</param>
         /// <param name="action">The action.</param>
-        public static void ForEach<T>(this IEnumerable<T> values, Action<T> action)
+        public static void ForEach<T>(this IEnumerable<T> objects, Action<T> action)
         {
-            values.ToList().ForEach(action);
+            foreach (var obj in objects)
+            {
+                action(obj);
+            }
+        }
+
+        /// <summary>
+        /// Fors the each using the specified objects.
+        /// </summary>
+        /// <typeparam name="T">The .</typeparam>
+        /// <param name="objects">The objects.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+        public static async Task ForEachAsync<T>(this IAsyncEnumerable<T> objects, Func<T, CancellationToken, Task> action, CancellationToken cancellationToken = default)
+        {
+            await foreach (var obj in objects.WithCancellation(cancellationToken))
+            {
+                await action(obj, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Fors the each using the specified objects.
+        /// </summary>
+        /// <typeparam name="T">The .</typeparam>
+        /// <param name="objects">The objects.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+        public static async Task ForEachAsync<T>(this IEnumerable<T> objects, Func<T, CancellationToken, Task> action, CancellationToken cancellationToken = default)
+        {
+            foreach (var obj in objects)
+            {
+                await action(obj, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Returns the separated string using the specified objects.
+        /// </summary>
+        /// <typeparam name="T">The .</typeparam>
+        /// <param name="objects">The objects.</param>
+        /// <param name="separator">The separator.</param>
+        /// <returns>The separated string.</returns>
+        public static string ToSeparatedString<T>(this IEnumerable<T> objects, char separator)
+        {
+#if NET6_0_OR_GREATER
+            return string.Join(separator, objects);
+#else
+            return objects.Select(x => x?.ToString()).ToSeparatedString(separator.ToString());
+#endif
+        }
+
+        /// <summary>
+        /// Wheres the if using the specified enumerable.
+        /// </summary>
+        /// <typeparam name="T">The .</typeparam>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>An enumerable of T objects.</returns>
+        public static IEnumerable<T> WhereIf<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, Func<bool> condition)
+        {
+            return condition() ? enumerable.Where(predicate) : enumerable;
         }
     }
 }
