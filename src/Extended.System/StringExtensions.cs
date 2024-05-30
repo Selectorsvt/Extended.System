@@ -116,7 +116,7 @@ namespace Extended.System
             using (var md5 = MD5.Create())
             {
                 byte[] inputBytes = encoding.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
+                byte[] hashBytes = inputBytes.ComputedHash(md5);
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < hashBytes.Length; i++)
                 {
