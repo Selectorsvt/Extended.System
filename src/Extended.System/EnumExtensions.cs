@@ -11,7 +11,7 @@ namespace Extended.System
         /// <typeparam name="T">The .</typeparam>
         /// <param name="value">The value.</param>
         /// <returns>An enumerable of string.</returns>
-        public static IEnumerable<string?> GetFlagEnumList<T>(T value) where T : Enum
+        public static IEnumerable<string?> GetFlagEnumList<T>(this T value) where T : Enum
         {
             var type = typeof(T);
             foreach (Enum flag in Enum.GetValues(type))
