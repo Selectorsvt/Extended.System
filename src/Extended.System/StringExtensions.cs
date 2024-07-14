@@ -142,5 +142,34 @@ namespace Extended.System
             }
 #endif
         }
+
+        /// <summary>
+        /// Creates the base 64 using the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <returns>The decoded string.</returns>
+        public static string FromBase64(this string input, Encoding? encoding = null)
+        {
+            if (encoding == null)
+                encoding = Encoding.UTF8;
+
+            var bytes = Convert.FromBase64String(input);
+            return encoding.GetString(bytes);
+        }
+
+        /// <summary>
+        /// Returns the base 64 using the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <returns>The encoded string.</returns>
+        public static string ToBase64(this string input, Encoding? encoding = null)
+        {
+            if (encoding == null)
+                encoding = Encoding.UTF8;
+
+            return Convert.ToBase64String(encoding.GetBytes(input));
+        }
     }
 }
