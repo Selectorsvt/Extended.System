@@ -39,5 +39,25 @@ namespace Extended.System
 
             return nameValueCollection;
         }
+
+        /// <summary>
+        /// Sets the or add using the specified dict.
+        /// </summary>
+        /// <typeparam name="TKey">The type of key.</typeparam>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <param name="dict">The dict.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        public static void SetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key] = value;
+            }
+            else
+            {
+                dict.Add(key, value);
+            }
+        }
     }
 }
