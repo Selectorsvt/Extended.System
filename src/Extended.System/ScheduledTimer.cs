@@ -1,4 +1,4 @@
-﻿using Timer = System.Timers.Timer;
+using Timer = System.Timers.Timer;
 
 namespace Extended.System
 {
@@ -33,12 +33,23 @@ namespace Extended.System
         private async void SyncTimer_Elapsed(object? sender, global::System.Timers.ElapsedEventArgs e)
         {
             var token = cancellationTokenSource!.Token;
+            await Invoke(token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Invokes the cancellation token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Exception">{nameof(AsyncDelegate)} not initialized.</exception>
+        /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
+        public async Task Invoke(CancellationToken cancellationToken)
+        {
             timer.Stop();
-            await semaphoreSlim.WaitAsync(token).ConfigureAwait(false);
+            await semaphoreSlim.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 if (AsyncDelegate != null)
-                    await AsyncDelegate.Invoke(token).ConfigureAwait(false);
+                    await AsyncDelegate.Invoke(cancellationToken).ConfigureAwait(false);
                 else
                     throw new Exception($"{nameof(AsyncDelegate)} not initialized.");
             }
