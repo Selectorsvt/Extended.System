@@ -169,7 +169,7 @@ namespace Extended.System
         /// <typeparam name="T">The .</typeparam>
         /// <param name="jsonObject">The json object.</param>
         /// <returns>The json content.</returns>
-        public static JsonContent ToJsonContent<T>(T jsonObject)
+        public static JsonContent ToJsonContent<T>(this T jsonObject)
         {
             return JsonContent.Create(jsonObject);
         }
