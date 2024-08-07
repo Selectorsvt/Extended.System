@@ -78,10 +78,13 @@ namespace Extended.System
         /// <param name="timeSpan">The time span.</param>
         public void Start(TimeSpan timeSpan)
         {
-            timer.Interval = timeSpan.TotalMilliseconds;
-            cancellationTokenSource = new CancellationTokenSource();
-            timer.Start();
-            IsScheduled = true;
+            if (!IsScheduled)
+            {
+                timer.Interval = timeSpan.TotalMilliseconds;
+                cancellationTokenSource = new CancellationTokenSource();
+                timer.Start();
+                IsScheduled = true;
+            }
         }
 
         /// <summary>
