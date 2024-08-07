@@ -7,7 +7,15 @@ namespace Extended.System
     /// </summary>
     public sealed class ScheduledTimer : IDisposable
     {
+        /// <summary>
+        /// The timer.
+        /// </summary>
         private Timer timer;
+
+        /// <summary>
+        /// The is scheduled.
+        /// </summary>
+        private bool IsScheduled { get; set; }
 
         /// <summary>
         /// The async delegate.
@@ -23,6 +31,7 @@ namespace Extended.System
         {
             timer = new Timer();
             timer.Elapsed += SyncTimer_Elapsed;
+            timer.AutoReset = false;
         }
 
         /// <summary>
@@ -44,7 +53,9 @@ namespace Extended.System
         /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public async Task Invoke(CancellationToken cancellationToken)
         {
-            timer.Stop();
+            if (IsScheduled)
+                timer.Stop();
+
             await semaphoreSlim.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
@@ -56,7 +67,8 @@ namespace Extended.System
             finally
             {
                 semaphoreSlim.Release();
-                timer.Start();
+                if (IsScheduled)
+                    timer.Start();
             }
         }
 
@@ -69,6 +81,7 @@ namespace Extended.System
             timer.Interval = timeSpan.TotalMilliseconds;
             cancellationTokenSource = new CancellationTokenSource();
             timer.Start();
+            IsScheduled = true;
         }
 
         /// <summary>
@@ -78,6 +91,7 @@ namespace Extended.System
         {
             cancellationTokenSource?.Cancel();
             timer.Stop();
+            IsScheduled = false;
         }
 
         /// <summary>
@@ -87,6 +101,7 @@ namespace Extended.System
         {
             timer.Dispose();
             cancellationTokenSource?.Dispose();
+            semaphoreSlim.Dispose();
         }
     }
 }
