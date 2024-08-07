@@ -112,8 +112,21 @@ namespace Extended.System
         /// <returns>The modified http client.</returns>
         public static HttpClient AddAutorizationHeader(this HttpClient httpClient, string sheme, string? parameters)
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(sheme, parameters);
+            httpClient.DefaultRequestHeaders.AddAutorizationHeader(sheme, parameters);
             return httpClient;
+        }
+
+        /// <summary>
+        /// Adds the autorization header using the specified request headers.
+        /// </summary>
+        /// <param name="requestHeaders">The request headers.</param>
+        /// <param name="sheme">The sheme.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The modified request headers.</returns>
+        public static HttpRequestHeaders AddAutorizationHeader(this HttpRequestHeaders requestHeaders, string sheme, string? parameters)
+        {
+            requestHeaders.Authorization = new AuthenticationHeaderValue(sheme, parameters);
+            return requestHeaders;
         }
 
         /// <summary>
