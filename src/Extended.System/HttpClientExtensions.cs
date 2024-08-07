@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 #endif
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace Extended.System
 {
@@ -149,6 +150,28 @@ namespace Extended.System
         public static HttpClient AddBrowserHeader(this HttpClient httpClient, string? browserValue = null)
         {
             return httpClient.AddDefaultHeader("user-agent", browserValue ?? ChromeHeader);
+        }
+
+        /// <summary>
+        /// Returns the form url encoded content using the specified form content.
+        /// </summary>
+        /// <typeparam name="T">The .</typeparam>
+        /// <param name="formContent">The form content.</param>
+        /// <returns>The form url encoded content.</returns>
+        public static FormUrlEncodedContent ToFormUrlEncodedContent<T>(this T formContent)
+        {
+            return new FormUrlEncodedContent(formContent!.ToDynamic().ToDictionary(x => x.Key, x => x.Value?.ToString()));
+        }
+
+        /// <summary>
+        /// Returns the json content using the specified json object.
+        /// </summary>
+        /// <typeparam name="T">The .</typeparam>
+        /// <param name="jsonObject">The json object.</param>
+        /// <returns>The json content.</returns>
+        public static JsonContent ToJsonContent<T>(T jsonObject)
+        {
+            return JsonContent.Create(jsonObject);
         }
     }
 }
