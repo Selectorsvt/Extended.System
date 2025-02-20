@@ -59,5 +59,26 @@ namespace Extended.System
                 dict.Add(key, value);
             }
         }
+
+        /// <summary>
+        /// Sets the or add using the specified dict.
+        /// </summary>
+        /// <typeparam name="TKey">The key.</typeparam>
+        /// <typeparam name="TValue">The value.</typeparam>
+        /// <typeparam name="TItem">The item.</typeparam>
+        /// <param name="dict">The dict.</param>
+        /// <param name="key">The key of dict.</param>
+        /// <param name="item">The item value.</param>
+        public static void SetOrAdd<TKey, TValue, TItem>(this IDictionary<TKey, TValue> dict, TKey key, TItem item) where TValue : ICollection<TItem>, new()
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict[key].Add(item);
+            }
+            else
+            {
+                dict.Add(key, new() { item });
+            }
+        }
     }
 }

@@ -87,7 +87,7 @@ namespace Extended.System
         /// <returns><placeholder>A <see cref="Task"/> representing the asynchronous operation.</placeholder></returns>
         public static async Task<Stream> GetStreamAsync(this HttpClient client, string? requestUri, CancellationToken cancellationToken)
         {
-            return await client.GetStreamAsync(requestUri).ConfigureAwait(false);
+            return await client.GetStreamAsync(new Uri(requestUri), cancellationToken).ConfigureAwait(false);
         }
 #endif
 

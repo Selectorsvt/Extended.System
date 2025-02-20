@@ -1,4 +1,7 @@
 using System.ComponentModel;
+#if NETCOREAPP3_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
@@ -9,6 +12,30 @@ namespace Extended.System
     /// </summary>
     public static class ObjectExtensions
     {
+        /// <summary>
+        /// Checks the is null using the specified obj.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        /// <param name="memberName">The member name.</param>
+        /// <exception cref="ArgumentNullException">The ArgumentNullException.</exception>
+        public static void CheckIsNull(
+#if NETCOREAPP3_0_OR_GREATER
+            [NotNull]
+#endif
+            this object? obj,
+#if NETCOREAPP3_0_OR_GREATER
+            [CallerArgumentExpression(nameof(obj))]
+#endif
+            string? memberName = null)
+        {
+#if NETCOREAPP3_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(obj, memberName);
+#else
+            if (obj == null)
+                 throw new ArgumentNullException(memberName);
+#endif
+        }
+
         /// <summary>
         /// Gets the property type using the specified obj.
         /// </summary>

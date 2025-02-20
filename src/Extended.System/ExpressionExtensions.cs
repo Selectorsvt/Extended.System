@@ -31,7 +31,16 @@ namespace Extended.System
         /// <returns>The prop info.</returns>
         public static PropertyInfo GetPropertyInfo<TSource, TProperty>(this Expression<Func<TSource, TProperty>> propertyLambda)
         {
-            if (propertyLambda.Body is not MemberExpression member)
+            ObjectExtensions.CheckIsNull(propertyLambda);
+
+            var body = propertyLambda.Body;
+
+            if (body is UnaryExpression unaryExpression && unaryExpression.NodeType == ExpressionType.Convert)
+            {
+                body = unaryExpression.Operand;
+            }
+
+            if (body is not MemberExpression member)
             {
                 throw new ArgumentException(string.Format(
                     "Expression '{0}' refers to a method, not a property.",

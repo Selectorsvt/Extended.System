@@ -1,8 +1,29 @@
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace Extended.System
 {
+    /// <summary>
+    /// The bindable model extensions class.
+    /// </summary>
+    public static class BindableModelExtensions
+    {
+        /// <summary>
+        /// Adds the dependency using the specified bindable.
+        /// </summary>
+        /// <typeparam name="TBindable">The bindable.</typeparam>
+        /// <param name="bindable">The bindable object.</param>
+        /// <param name="dependentProperty">The dependent property.</param>
+        /// <param name="triggerProperties">The trigger properties.</param>
+        /// <returns>Modified object.</returns>
+        public static TBindable AddDependency<TBindable>(this TBindable bindable, Expression<Func<TBindable, dynamic>> dependentProperty, params Expression<Func<TBindable, dynamic>>[] triggerProperties) where TBindable : BindableModel
+        {
+            bindable?.AddDependency(dependentProperty.GetPropertyName(), triggerProperties.Select(x => x.GetPropertyName()).ToArray());
+            return bindable!;
+        }
+    }
+
     /// <summary>
     /// The bindable model class.
     /// </summary>
@@ -23,13 +44,27 @@ namespace Extended.System
         /// <summary>
         /// The session.
         /// </summary>
-        private Dictionary<string, dynamic?> session = new();
+        private Dictionary<string, dynamic?> _context = new();
+
+        /// <summary>
+        /// The depends.
+        /// </summary>
+        private Dictionary<string, HashSet<string>> _depends = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindableModel"/> class.
         /// </summary>
         protected BindableModel()
         {
+            PropertyChanged += BindableModel_PropertyChanged;
+        }
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="BindableModel"/> class.
+        /// </summary>
+        ~BindableModel()
+        {
+            PropertyChanged -= BindableModel_PropertyChanged;
         }
 
         /// <summary>
@@ -40,7 +75,7 @@ namespace Extended.System
         protected dynamic? GetProperty([CallerMemberName] string? memberName = null)
         {
             CheckIsNull(memberName);
-            return session.TryGetValue(memberName!, out dynamic? value) ? value : this.GetPropertyType(memberName)?.GetDefaultValue();
+            return _context.TryGetValue(memberName!, out dynamic? value) ? value : this.GetPropertyType(memberName)?.GetDefaultValue();
         }
 
         /// <summary>
@@ -54,17 +89,17 @@ namespace Extended.System
             CheckIsNull(memberName);
             OnPropertyChanging(memberName);
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(memberName));
-            if (session.TryGetValue(memberName!, out dynamic? prevValue))
+            if (_context.TryGetValue(memberName!, out dynamic? prevValue))
             {
                 if (!(prevValue?.Equals(value) ?? value == null))
                 {
-                    session[memberName!] = value;
+                    _context[memberName!] = value;
                     OnPropertyChanged(this, memberName);
                 }
             }
             else
             {
-                session.Add(memberName!, value);
+                _context.Add(memberName!, value);
                 OnPropertyChanged(this, memberName);
             }
         }
@@ -79,7 +114,7 @@ namespace Extended.System
         {
             CheckIsNull(memberName);
             OnPropertyChanging(memberName);
-            if (session.TryGetValue(memberName!, out dynamic? prevValue))
+            if (_context.TryGetValue(memberName!, out dynamic? prevValue))
             {
                 if (!(prevValue?.Equals(value) ?? value == null))
                 {
@@ -97,7 +132,7 @@ namespace Extended.System
             }
             else
             {
-                session.Add(memberName!, new BindingList<T>(value));
+                _context.Add(memberName!, new BindingList<T>(value));
                 OnPropertyChanged(this, memberName);
             }
         }
@@ -106,14 +141,33 @@ namespace Extended.System
         /// Adds the dependency using the specified dependent property.
         /// </summary>
         /// <param name="dependentProperty">The dependent property.</param>
-        /// <param name="properties">The properties.</param>
-        protected void AddDependency(string dependentProperty, string[] properties)
+        /// <param name="triggerProperties">The properties.</param>
+        protected internal void AddDependency(string dependentProperty, params string[] triggerProperties)
         {
-            PropertyChanged += (s, e) =>
+            triggerProperties.ForEach(tp =>
             {
-                if (properties.Contains(e.PropertyName))
-                    OnPropertyChanged(s, dependentProperty);
-            };
+                if (_depends.TryGetValue(dependentProperty, out HashSet<string>? value) && value.Any(d => d == tp))
+                    throw new LoopTriggerException(tp, dependentProperty);
+
+                _depends.SetOrAdd(tp, dependentProperty);
+            });
+        }
+
+        /// <summary>
+        /// Bindables the model property changed using the specified sender.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The .</param>
+        private void BindableModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            var property = e.PropertyName;
+            if (property != null)
+            {
+                if (_depends.TryGetValue(property, out HashSet<string>? value))
+                {
+                    value.ForEach(x => OnPropertyChanged(sender, x));
+                }
+            }
         }
 
         /// <summary>
@@ -151,13 +205,23 @@ namespace Extended.System
         /// <exception cref="ArgumentNullException">Posible exception.</exception>
         private static void CheckIsNull(string? memberName)
         {
-            if (memberName == null)
-#if NET6_0_OR_GREATER
-                ArgumentNullException.ThrowIfNull(nameof(memberName));
-#else
-           throw new ArgumentNullException(nameof(memberName));
-#endif
+            memberName.CheckIsNull(nameof(memberName));
+        }
+    }
 
+    /// <summary>
+    /// The loop trigger exception class.
+    /// </summary>
+    /// <seealso cref="Exception"/>
+    public sealed class LoopTriggerException : Exception
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoopTriggerException"/> class.
+        /// </summary>
+        /// <param name="triggerProperty">The trigger property.</param>
+        /// <param name="dependentProperty">The dependent property.</param>
+        public LoopTriggerException(string triggerProperty, string dependentProperty) : base($"Trying add trigger property {triggerProperty} for property {dependentProperty} throw loop exception")
+        {
         }
     }
 }
