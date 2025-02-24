@@ -27,7 +27,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --framework net8.0
   pack:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
